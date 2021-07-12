@@ -1,10 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-#include<QFileDialog>
-#include <QTextStream>
-
-
+#include<QMap>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -18,75 +14,58 @@ MainWindow::~MainWindow()
 }
 
 
+
+
+QMap<QString,QVector<int>> Data;
+
 void MainWindow::on_OpenFileButton_clicked()
 {
+
     QString FileName = QFileDialog::getOpenFileName(this, "Выберите файл", QDir::currentPath(), "*.txt");
     ui->FilePath->setText(FileName);
     QFile file(FileName);
 
     ui->comboBox->clear();
-    QMap<QString,QVector<int>> Data;
+    ui->widget->clearGraphs();
+    Data.clear();
+
     QVector<int>TemporaryDataMass;
     int kofic;
-    QString TemporaryData,LineTest,LineTest1,TemporaryData1             ,QWer;
+    QString TemporaryData,LineTest,LineTest1,TemporaryData1,CorrectSignal             ,QWer;
     QStringList list;
     int NumPac;
     if ((file.exists())&&(file.open(QIODevice::ReadOnly))){
 
         while(!file.atEnd()){
-            //QString TemporaryData1 = file.readLine(8);
-            //file.readLine(8);
-            //QString NumPac = file.readLine(3);
 
-           // int NumPac = (file.readLine(3)).toInt(nullptr,16);
-           // file.readLine(2);
             LineTest = file.readLine();
             LineTest1 = LineTest.left(LineTest.lastIndexOf(" "));
+            CorrectSignal = LineTest.right(6).left(4);
             TemporaryData1 = LineTest1.left(LineTest1.indexOf("#"));
-
-
-
-            //QTextStream Line (&LineTest1);//Именно здесь ошибка, тк я не знаю как ограничить считывание до двух пробелов(идут передtrue/false)
-
-            //QTextStream Line (file.readLine('  '));//Именно здесь ошибка, тк я не знаю как ограничить считывание до двух пробелов(идут передtrue/false)
-            //while(!Line.atEnd()){                   //А в нынешней реализации команда преаброзует '  ' в цифровое значение и считывает до него,
-                //                int a;
-                //                Line >> a;
-                //                TemporaryDataMass.push_back(a);
-                //                (верх и низ - разные попытки записи)
-                //                TemporaryDataMass.push_back((Line.readLine(3)).toInt(nullptr,16));//что является ошибочным, хоть программа и запускается и что-то отрабатывает.
-                //                Line.readLine(2);
-
-            //}
 
             list  = LineTest1.split(" ");
             list.takeFirst();
             list.takeFirst();
             NumPac = list.takeFirst().toInt(nullptr,16);
-            list.takeFirst();
+            kofic = list.takeFirst().toInt(nullptr,16);
+            if(CorrectSignal=="True"){
+                for(auto &i :list){
+                    TemporaryDataMass.push_back(kofic*i.toInt(nullptr,16));
+                }
 
+                if(NumPac==0){
+                    TemporaryData = TemporaryData1;
+                }
 
-
-            for(auto &i :list){
-                TemporaryDataMass.push_back(i.toInt(nullptr,16));
+                for(auto i : TemporaryDataMass){
+                    Data[TemporaryData].push_back(i);
+                }
+                TemporaryDataMass.clear();
             }
 
-           // file.readLine();
-            if(NumPac==0){
-                TemporaryData = TemporaryData1;
-            }
-
-            for(auto i : TemporaryDataMass){
-                Data[TemporaryData].push_back(i);
-            }
-            TemporaryDataMass.clear();
-            QWer+="comboBox ";
 
 
-
-
-
-
+        QWer+="CorrectSignal "+CorrectSignal+" \n";
         QWer+="\n\nLineTest "+LineTest;
         QWer+="\n\nLineTest1 "+LineTest1;
         QWer+="\n\nTemporaryData1 "+TemporaryData1;
@@ -99,29 +78,51 @@ void MainWindow::on_OpenFileButton_clicked()
         QWer+="\n\n ";
 
 
-        for(const auto &i : Data.values()){
+        for(auto &i : Data.values()){
             QWer+="Data.values ";
             for(const auto &q : i){
                 QWer+=" "+QString::number(q);
             }
                QWer+="\n\n";
-               //QWer+=QString::number(i[0+schet])+" "+QString::number(i[1+schet])+" "+QString::number(i[2+schet])
-               //       +" "+QString::number(i[3+schet])+" "+QString::number(i[4+schet])+" "+QString::number(i[5+schet])+"\n";
         }
         QWer += "\n";
-
-
-
 
         }
         file.close();
 
     }
-    for(const auto &i : Data.keys()){
+    QWer+="comboBox ";
+    for(auto &i : Data.keys()){
 
         ui->comboBox->addItem(i);
         QWer+=i+" ";
     }
     ui->textBrowser_2->setText(QWer);
+}
+
+
+void MainWindow::on_DrawGraph_clicked()
+{
+    QVector<double> SelectedData,SelectedDataTime;
+    double counter = 0, MaxElement = 0;
+    QString SelectedTime = ui->comboBox->currentText();//для считки что выбрано в combobox
+    for (auto i : Data.keys()){
+        if(SelectedTime ==i){
+            for(auto q : Data[i]){
+                SelectedData.push_back(q);
+                SelectedDataTime.push_back(counter);
+                counter++;
+                if(q>MaxElement){
+                    MaxElement=q;
+                }
+            }
+        }
+    }
+    ui->widget->clearGraphs();
+    ui->widget->xAxis->setRange(0,SelectedDataTime.size()+5);
+    ui->widget->yAxis->setRange(0,MaxElement+5);
+    ui->widget->addGraph();
+    ui->widget->graph(0)->addData(SelectedDataTime,SelectedData);
+    ui->widget->replot();
 }
 

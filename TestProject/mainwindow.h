@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include<QFileDialog>
+
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,6 +20,8 @@ public:
 
 private slots:
     void on_OpenFileButton_clicked();
+
+    void on_DrawGraph_clicked();
 
 private:
     Ui::MainWindow *ui;
