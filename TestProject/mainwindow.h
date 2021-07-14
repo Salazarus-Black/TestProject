@@ -23,6 +23,8 @@ private slots:
 
     void on_DrawGraph_clicked();
 
+    void on_comboBox_currentTextChanged(const QString &SelectedTime);
+
 private:
     Ui::MainWindow *ui;
 };

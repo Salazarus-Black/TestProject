@@ -27,12 +27,13 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralwidget;
-    QPushButton *OpenFileButton;
-    QTextBrowser *FilePath;
+    QHBoxLayout *horizontalLayout_2;
+    QWidget *widget_2;
     QTextBrowser *textBrowser_2;
-    QComboBox *comboBox;
     QPushButton *DrawGraph;
-    QWidget *horizontalLayoutWidget;
+    QComboBox *comboBox;
+    QTextBrowser *FilePath;
+    QPushButton *OpenFileButton;
     QHBoxLayout *horizontalLayout;
     QCustomPlot *widget;
     QMenuBar *menubar;
@@ -42,39 +43,45 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(1250, 629);
+        MainWindow->resize(1012, 641);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
-        OpenFileButton = new QPushButton(centralwidget);
-        OpenFileButton->setObjectName(QString::fromUtf8("OpenFileButton"));
-        OpenFileButton->setGeometry(QRect(60, 40, 131, 31));
-        FilePath = new QTextBrowser(centralwidget);
-        FilePath->setObjectName(QString::fromUtf8("FilePath"));
-        FilePath->setGeometry(QRect(240, 30, 261, 41));
-        textBrowser_2 = new QTextBrowser(centralwidget);
+        horizontalLayout_2 = new QHBoxLayout(centralwidget);
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        widget_2 = new QWidget(centralwidget);
+        widget_2->setObjectName(QString::fromUtf8("widget_2"));
+        textBrowser_2 = new QTextBrowser(widget_2);
         textBrowser_2->setObjectName(QString::fromUtf8("textBrowser_2"));
-        textBrowser_2->setGeometry(QRect(20, 170, 491, 411));
-        comboBox = new QComboBox(centralwidget);
-        comboBox->setObjectName(QString::fromUtf8("comboBox"));
-        comboBox->setGeometry(QRect(40, 130, 171, 31));
-        DrawGraph = new QPushButton(centralwidget);
+        textBrowser_2->setGeometry(QRect(10, 150, 461, 411));
+        DrawGraph = new QPushButton(widget_2);
         DrawGraph->setObjectName(QString::fromUtf8("DrawGraph"));
-        DrawGraph->setGeometry(QRect(260, 130, 201, 31));
-        horizontalLayoutWidget = new QWidget(centralwidget);
-        horizontalLayoutWidget->setObjectName(QString::fromUtf8("horizontalLayoutWidget"));
-        horizontalLayoutWidget->setGeometry(QRect(570, 90, 661, 481));
-        horizontalLayout = new QHBoxLayout(horizontalLayoutWidget);
+        DrawGraph->setGeometry(QRect(20, 110, 201, 31));
+        comboBox = new QComboBox(widget_2);
+        comboBox->setObjectName(QString::fromUtf8("comboBox"));
+        comboBox->setGeometry(QRect(10, 60, 171, 31));
+        FilePath = new QTextBrowser(widget_2);
+        FilePath->setObjectName(QString::fromUtf8("FilePath"));
+        FilePath->setGeometry(QRect(160, 10, 331, 41));
+        OpenFileButton = new QPushButton(widget_2);
+        OpenFileButton->setObjectName(QString::fromUtf8("OpenFileButton"));
+        OpenFileButton->setGeometry(QRect(20, 20, 131, 31));
+
+        horizontalLayout_2->addWidget(widget_2);
+
+        horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        horizontalLayout->setContentsMargins(0, 0, 0, 0);
-        widget = new QCustomPlot(horizontalLayoutWidget);
+        widget = new QCustomPlot(centralwidget);
         widget->setObjectName(QString::fromUtf8("widget"));
 
         horizontalLayout->addWidget(widget);
 
+
+        horizontalLayout_2->addLayout(horizontalLayout);
+
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 1250, 25));
+        menubar->setGeometry(QRect(0, 0, 1012, 25));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
@@ -88,8 +95,8 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
-        OpenFileButton->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
         DrawGraph->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
+        OpenFileButton->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
     } // retranslateUi
 
 };

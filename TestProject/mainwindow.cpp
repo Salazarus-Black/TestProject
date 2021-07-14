@@ -1,20 +1,20 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include<QMap>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->widget->setInteraction(QCP::iRangeZoom, true);
+    ui->widget->setInteraction(QCP::iRangeDrag, true);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-
-
 
 QMap<QString,QVector<int>> Data;
 
@@ -106,6 +106,31 @@ void MainWindow::on_DrawGraph_clicked()
     QVector<double> SelectedData,SelectedDataTime;
     double counter = 0, MaxElement = 0;
     QString SelectedTime = ui->comboBox->currentText();//для считки что выбрано в combobox
+    for (auto i : Data.keys()){
+        if(SelectedTime ==i){
+            for(auto q : Data[i]){
+                SelectedData.push_back(q);
+                SelectedDataTime.push_back(counter);
+                counter++;
+                if(q>MaxElement){
+                    MaxElement=q;
+                }
+            }
+        }
+    }
+    ui->widget->clearGraphs();
+    ui->widget->xAxis->setRange(0,SelectedDataTime.size()+5);
+    ui->widget->yAxis->setRange(0,MaxElement+5);
+    ui->widget->addGraph();
+    ui->widget->graph(0)->addData(SelectedDataTime,SelectedData);
+    ui->widget->replot();
+}
+
+void MainWindow::on_comboBox_currentTextChanged(const QString &SelectedTime)
+{
+    QVector<double> SelectedData,SelectedDataTime;
+    double counter = 0, MaxElement = 0;
+    //QString SelectedTime = ui->comboBox->currentText();//для считки что выбрано в combobox
     for (auto i : Data.keys()){
         if(SelectedTime ==i){
             for(auto q : Data[i]){
